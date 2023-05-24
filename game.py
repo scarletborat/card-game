@@ -105,6 +105,31 @@ class Game:
     self.discard_pile += table_cards
     return 0
 
+  def circle(self):
+    players = list(self.players)
+    attacker_index = 0
+    defender = players[attacker_index + 1]
+    attackers = list(players)
+    del attackers[attacker_index + 1]
+
+    while attackers:
+      took = self.small_circle(attackers, attacker_index, defender)
+
+      if self.deck.get_len():
+        self.draw_cards(players)
+      else:
+        players = [player for player in players if player.cards_number()]
+      
+      defender_index = players.index(defender)
+      step = 1 + took
+      defender_index = (defender_index + step) % len(players)
+      defender = players[defender_index]
+      attacker_index = (attacker_index - 1) % len(players)
+      if not players.index(attacker_index):
+        attacker_index -= 1
+      attackers = list(players)
+      del attackers[defender_index]
+  
   # def attack(self):
   #   table_cards = []
   #   attacker = self.players[self.attacker]
