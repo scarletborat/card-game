@@ -1,5 +1,5 @@
 from card import Card
-from random import sample
+from random import sample, shuffle
 
 deck_36 = 36
 deck_52 = 52
@@ -21,22 +21,33 @@ class Deck:
       self.deck_type = deck_type
       self.deck = []
       self.init_deck(self.deck_type)
+      self.trump = None
 
     def init_deck(self, deck_type) -> None:
-       card_range = values_per_suit[deck_type]
+      card_range = values_per_suit[deck_type]
 
-       for suit in suits.keys():
-          for value in range(card_range[0], card_range[1] + 1):
-             card = Card(suit=suit, value=value)
-             self.deck.append(card)
-    
+      for suit in suits.keys():
+        for value in range(card_range[0], card_range[1] + 1):
+            card = Card(suit=suit, value=value)
+            self.deck.append(card)
+      
+      shuffle(self.deck)
+
     def get_cards(self, number_of_cards):
-      random_cards = sample(self.deck, number_of_cards) if len(self.deck) > number_of_cards else self.deck[:]
+      cards = self.deck[:number_of_cards]
         
-      for card in random_cards:
+      for card in cards:
         self.deck.remove(card)
 
-      return random_cards 
-    
+      return cards 
+
     def get_len(self):
        return len(self.deck)
+
+    def get_trump(self):
+      if not self.trump:
+        self.trump = self.deck[-1].get_suit()
+      return self.trump
+
+    def cards_per_player(self):
+       return 6
