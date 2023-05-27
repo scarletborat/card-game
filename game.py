@@ -17,8 +17,7 @@ def cards_representation(cards):
   return cards_representation
 
 class Game:
-  def __init__(self, number_of_players) -> None:
-    self.number_of_players = number_of_players
+  def __init__(self) -> None:
     self.deck = Deck()
     self.discard_pile = []
 
@@ -32,9 +31,9 @@ class Game:
     min_trump = 14
     min_trump_player_i = 0
 
-    names = ['Anton', 'Sveta', 'Vitalik', 'Beglec']
-    for i in range(self.number_of_players):
-      name = names[i] #input(f"Input name of the {i} player\n")
+    players_names = ['Anton', 'Sveta', 'Vitalik', 'Beglec']
+
+    for i, name in enumerate(players_names):
       player = Player(name=name)
 
       player_cards = self.deck.get_cards(6)
@@ -50,6 +49,18 @@ class Game:
       self.players.append(player)
 
     self.players = self.players[min_trump_player_i:] + self.players[:min_trump_player_i]
+
+  def invite_players(self):
+    players = []
+    player_num = 1
+    while True:
+      player_name = input(f"Please input {player_num} player name")
+      if player_name == 'start':
+        return players
+      else:
+        players.append(player_name)
+      
+
 
   def draw_cards(self, players):
     for player in players:
@@ -72,7 +83,7 @@ class Game:
     card = attacker.place_card(suit_value)
     table_cards.insert(0, card)
 
-    while passes < len(attackers):
+    while passes < len(attackers) or defender.cards_number():
       if not passes:
         print(f"{defender.get_name().title()} you are defender\n")
         print("You cards are:\n")
@@ -102,6 +113,7 @@ class Game:
       else:
         passes += 1
 
+
     self.discard_pile += table_cards
     return 0
 
@@ -119,7 +131,7 @@ class Game:
         self.draw_cards(players)
       else:
         players = [player for player in players if player.cards_number()]
-      
+
       defender_index = players.index(defender)
       step = 1 + took
       defender_index = (defender_index + step) % len(players)
@@ -129,7 +141,7 @@ class Game:
         attacker_index -= 1
       attackers = list(players)
       del attackers[defender_index]
-  
+
   # def attack(self):
   #   table_cards = []
   #   attacker = self.players[self.attacker]
