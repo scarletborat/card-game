@@ -3,6 +3,8 @@ from unittest import TestCase
 from unittest.mock import patch
 from io import StringIO
 import sys
+import subprocess
+import time
 
 from game import Game
 
@@ -27,6 +29,13 @@ class TestGame(TestCase):
         sys.stdout = sys.__stdout__
 
         self.assertEqual(actual_output, expected_output)
+
+    @patch('builtins.input', side_effect=['John', 'Anton', 'q'])
+    def test_invite_players_quit(self, mock_input):
+        game = Game()
+        players = game.invite_players()
+        print(f"Players: {players}")
+        self.assertEqual(players, None)
 
 if __name__ == '__main__':
     unittest.main()

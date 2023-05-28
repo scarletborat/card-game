@@ -56,7 +56,7 @@ class Game:
     while True:
       player_name = input(f"Please input {player_num} player name")
       if player_name == 'q':
-        break
+        return None
       elif player_name == 'start':
         if len(players) < 2:
           print("Must be at least 2 players in the game")
