@@ -34,7 +34,7 @@ class Game:
     min_trump = 14
     min_trump_player_i = 0
 
-    players_names = ['Anton', 'Sveta', 'Vitalik', 'Beglec']
+    players_names = self.invite_players()
 
     for i, name in enumerate(players_names):
       player = Player(name=name)
