@@ -7,18 +7,19 @@ import sys
 from card import Card
 from game import Game
 
-class Stub(Game):
+class BasicStub(Game):
   def invite_players(self):
       return ['John', 'Jane']
-  
-  def small_circle(self, attackers, attacker_index, defender):
-    attacker = attackers[attacker_index]
-    attacker_cards = [attacker.place_card(f"{card.get_suit()}:{card.get_value()}") for card in attacker.get_cards()]
-    defender.draw_cards(attacker_cards)
-    return 1
       
 class GameCircle(TestCase):
     def test_user_lost(self):
+      class Stub(BasicStub):
+         def small_circle(self, attackers, attacker_index, defender):
+          attacker = attackers[attacker_index]
+          attacker_cards = [attacker.place_card(f"{card.get_suit()}:{card.get_value()}") for card in attacker.get_cards()]
+          defender.draw_cards(attacker_cards)
+          return 1
+      
       game = Stub()
       game.deck.deck = []
 
@@ -38,6 +39,7 @@ class GameCircle(TestCase):
       sys.stdout = sys.__stdout__
 
       self.assertEqual(actual_output, f"Game over! {game.players[1].get_name().title()} you lost\n")
+
 
 if __name__ == '__main__':
     unittest.main()
