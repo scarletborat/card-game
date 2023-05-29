@@ -6,15 +6,15 @@ import sys
 
 from game import Game
 
-class TestGame(TestCase):
+class InvitePlayers(TestCase):
     @patch('builtins.input', side_effect=['John', 'Jane', 'start'])
-    def test_invite_players_positive_case(self, mock_input):
+    def test_positive_case(self, mock_input):
         game = Game()
         players = game.invite_players()
         self.assertEqual(players, ['John', 'Jane'])
 
     @patch('builtins.input', side_effect=['John', 'start', 'q'])
-    def test_invite_players_two_user_min(self, mock_input):
+    def test_two_user_min(self, mock_input):
         game = Game()
         expected_output = "Must be at least 2 players in the game\n"
 
@@ -29,11 +29,13 @@ class TestGame(TestCase):
         self.assertEqual(actual_output, expected_output)
 
     @patch('builtins.input', side_effect=['John', 'Anton', 'q'])
-    def test_invite_players_quit(self, mock_input):
+    def test_quit(self, mock_input):
         game = Game()
         players = game.invite_players()
         print(f"Players: {players}")
         self.assertEqual(players, None)
+
+    
 
 if __name__ == '__main__':
     unittest.main()
