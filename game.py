@@ -11,6 +11,9 @@ def cycle(list, start_index, callback):
       index = (index + 1) % length
       counter += 1
 
+def next(number, i):
+  return (number + i) % number
+
 def cards_representation(cards):
   cards_representation = [card.get_suit()+':'+str(card.get_value())+' ' for card in cards]
   cards_representation = ''.join(cards_representation)
@@ -64,8 +67,6 @@ class Game:
           return players
       else:
         players.append(player_name)
-      
-
 
   def draw_cards(self, players):
     for player in players:
@@ -122,29 +123,33 @@ class Game:
     self.discard_pile += table_cards
     return 0
 
-  def circle(self):
+  def game_circle(self):
     players = list(self.players)
+    
     attacker_index = 0
-    defender = players[attacker_index + 1]
+    defender = players[next(len(players), 1)]
     attackers = list(players)
-    del attackers[attacker_index + 1]
+    del attackers[next(len(attackers), 1)]
 
-    while attackers:
+    while True:
       took = self.small_circle(attackers, attacker_index, defender)
 
       if self.deck.get_len():
         self.draw_cards(players)
-      else:
-        players = [player for player in players if player.cards_number()]
 
-      defender_index = players.index(defender)
-      step = 1 + took
-      defender_index = (defender_index + step) % len(players)
-      defender = players[defender_index]
-      attacker_index = (attacker_index - 1) % len(players)
-      if not players.index(attacker_index):
-        attacker_index -= 1
+      players = [player for player in players if player.cards_number()]
+
+      if len(players) < 2:
+        if len(players) == 1:
+          print(f"Game over! {players[0].get_name().title()} you lost")
+        elif len(players) == 0:
+          print(f"Game over! Draw!")
+        break
+
+      attacker_index = next(len(players), took + 1)
+      defender_index = next(len(players), 1)
       attackers = list(players)
+      defender = attackers[defender_index]
       del attackers[defender_index]
 
   # def attack(self):

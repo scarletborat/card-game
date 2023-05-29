@@ -3,8 +3,6 @@ from unittest import TestCase
 from unittest.mock import patch
 from io import StringIO
 import sys
-import subprocess
-import time
 
 from game import Game
 
