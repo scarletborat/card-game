@@ -1,6 +1,8 @@
 from player import Player
 from deck import Deck
 
+from utils import one_str_occurrence
+
 def cycle(list, start_index, callback):
   index = start_index
   counter = 0
@@ -18,6 +20,23 @@ def cards_representation(cards):
   cards_representation = [card.get_suit()+':'+str(card.get_value())+' ' for card in cards]
   cards_representation = ''.join(cards_representation)
   return cards_representation
+
+def input_value(message):
+  val = None
+  while not val:
+    val = input(message)
+  return val
+
+def player_has_card(suit_value, player):
+  if one_str_occurrence(suit_value, ':'):
+    index = player.card_index(suit_value)
+    return index != -1
+  return False
+
+def player_notification(player, role):
+  print(f"{player.get_name().title()} you are {role}\n")
+  print("You cards are:\n")
+  print(cards_representation(player.get_cards())+'\n')
 
 class Game:
   def __init__(self) -> None:
@@ -74,54 +93,70 @@ class Game:
       cards = self.deck.get_cards(cards_number)
       player.draw_cards(cards)
 
+  def init_turn(message, player):
+    while True:
+      suit_value = input_value(message)
+      if player_has_card(suit_value, player):
+        return player.place_card(suit_value)
+
+  def defender_turn(self, message, player, top_table_card):
+    while True:
+      value = input_value(message)
+      if value == 't' or value == 'take':
+        return False
+      if not player_has_card(value, player):
+        continue
+      card = player.get_card(value)
+      if card.get_suit() == top_table_card.get_suit() and card.get_value > top_table_card.get_value():
+        return player.place_card(value)
+      if self.deck.get_trump() != top_table_card.get_suit() and card.get_suit() == self.deck.get_trump():
+        return player.place_card(value)
+
+  def discard_turn(self, message, player, top_table_card):
+    while True:
+      value = input_value(message)
+      if value == 'c' or value == 'continue':
+        return False
+      if not player_has_card(value, player):
+        continue
+      card = player.get_card(value)
+      if card.get_suit() == top_table_card.get_suit():
+        return player.place_card(value)
+
   def small_circle(self, attackers, attacker_index, defender):
     table_cards = []
     passes = 0
     attacker = attackers[attacker_index]
 
     print(f'Trump is {self.deck.get_trump()}')
+    player_notification(attacker, 'attacker')
 
-    print(f"{attacker.get_name().title()} you are attacker\n")
-    print("You cards are:\n")
-    print(cards_representation(attacker.get_cards())+'\n')
-
-    suit_value = input('Enter the card\n')
-    card = attacker.place_card(suit_value)
+    card = self.init_turn('Enter the card\n', attacker)
     table_cards.insert(0, card)
 
-    while passes < len(attackers) or defender.cards_number():
-      if not passes:
-        print(f"{defender.get_name().title()} you are defender\n")
-        print("You cards are:\n")
-        print(cards_representation(defender.get_cards())+'\n')
-        suit_value = input('Enter the card\n')
-        print(f"Defender type {suit_value}")
+    while True:
+      player_notification(defender, 'defender')
+      card = self.defender_turn('Enter the card\n', defender, table_cards[0])
 
-        if suit_value != 'take':
-          card = defender.place_card(suit_value)
-          table_cards.insert(0, card)
-        else:
-          defender.draw_cards(table_cards)
-          return 1
-
-      attacker_index = (attacker_index + 1) % len(attackers)
-      attacker = attackers[attacker_index]
-
-      print(f"{attacker.get_name().title()} you are attacker\n")
-      print("You cards are:\n")
-      print(cards_representation(attacker.get_cards())+'\n')
-
-      suit_value = input('Enter the card\n')
-      if suit_value != 'continue':
-        card = defender.place_card(suit_value)
+      if card:
         table_cards.insert(0, card)
+      else:
+        defender.draw_cards(table_cards)
+        return 1
+
+      attacker = attackers[next(len(attackers), attacker_index + 1)]
+      player_notification(attacker, 'attacker')
+      card = self.discard_turn('Enter the card\n', defender, table_cards[0])
+
+      if card:
         passes = 0
+        table_cards.insert(0, card)
       else:
         passes += 1
 
-
-    self.discard_pile += table_cards
-    return 0
+      if passes >= len(attackers) or not defender.cards_number():
+        self.discard_pile += table_cards
+        return 0
 
   def game_circle(self):
     players = list(self.players)
@@ -136,7 +171,6 @@ class Game:
 
     while True:
       took = self.small_circle(attackers, attacker_index, defender)
-      cards = [attacker.get_cards() for attacker in attackers]
 
       if self.deck.get_len():
         self.draw_cards(players)
