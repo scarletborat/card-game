@@ -127,12 +127,16 @@ class Game:
     players = list(self.players)
     
     attacker_index = 0
-    defender = players[next(len(players), 1)]
-    attackers = list(players)
-    del attackers[next(len(attackers), 1)]
+    defender_index = 1
+    defender = players[defender_index]
+    attackers = []
+    for i, attacker in enumerate(players):
+      if i != defender_index:
+        attackers.append(attacker)
 
     while True:
       took = self.small_circle(attackers, attacker_index, defender)
+      cards = [attacker.get_cards() for attacker in attackers]
 
       if self.deck.get_len():
         self.draw_cards(players)
@@ -146,43 +150,8 @@ class Game:
           print(f"Game over! Draw!")
         break
 
-      attacker_index = next(len(players), took + 1)
-      defender_index = next(len(players), 1)
+      attacker_index = next(len(players), attacker_index + 1 + took)
+      defender_index = next(len(players), attacker_index + 1)
       attackers = list(players)
       defender = attackers[defender_index]
       del attackers[defender_index]
-
-  # def attack(self):
-  #   table_cards = []
-  #   attacker = self.players[self.attacker]
-
-  #   print(f"{attacker.get_name().title()} is your turn\n")
-  #   print("You cards are:\n")
-  #   print(cards_representation(attacker.get_cards())+'\n')
-
-  #   suit_value = None
-  #   while attacker.card_index(suit_value) == -1:
-  #     suit_value = input('Enter the card\n')
-  #   attacker_card = attacker.place_card(suit_value)
-  #   table_cards.insert(0, attacker_card)
-    
-  #   print('Cards on the table:\n')
-  #   print(cards_representation(table_cards)+'\n')
-
-  #   print("You cards are:\n")
-  #   print(cards_representation(attacker.get_cards())+'\n')
-
-  #   defender = self.players[self.defender]
-
-  #   print(f"{defender.get_name().title()} is your turn\n")
-  #   print("You cards are:\n")
-  #   print(cards_representation(defender.get_cards())+'\n')
-
-
-  #   suit_value = None
-  #   while defender.card_index(suit_value) == -1:
-  #     suit_value = input('Enter the card\n')
-    
-  #   defender_card = defender.get_card(suit_value)
-
-    

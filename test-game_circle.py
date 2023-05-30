@@ -40,6 +40,33 @@ class GameCircle(TestCase):
 
       self.assertEqual(actual_output, f"Game over! {game.players[1].get_name().title()} you lost\n")
 
+    def test_draw(self):
+      class Stub(BasicStub):
+        def small_circle(self, attackers, attacker_index, defender):
+          for attacker in attackers:
+            attacker.cards = []
+          defender.cards = []
+          return 0
+
+      game = Stub()
+      game.deck.deck = []
+
+      player_cards = [
+        [Card(suit='heart', value=6), Card(suit='diamond', value=7)],
+        [Card(suit='heart', value=7), Card(suit='diamond', value=8)]
+      ]
+
+      for i, player in enumerate(game.players):
+         player.cards = player_cards[i]
+
+      captured_output = StringIO()
+      sys.stdout = captured_output
+
+      game.game_circle()
+      actual_output = captured_output.getvalue()
+      sys.stdout = sys.__stdout__
+
+      self.assertEqual(actual_output, "Game over! Draw!\n")
 
 if __name__ == '__main__':
     unittest.main()
