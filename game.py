@@ -46,14 +46,14 @@ class Game:
     self.players = []
     self.exited_players = []
 
-    self.attacker = 0
-    self.defender = 1
+  def start(self):
+    players_names = self.invite_players()
+    self.init_and_arrange_first_turn_order(players_names)
+    self.game_circle()
 
-    trump_card = self.deck.get_trump()
+  def init_and_arrange_first_turn_order(self, players_names):
     min_trump = 14
     min_trump_player_i = 0
-
-    players_names = self.invite_players()
 
     for i, name in enumerate(players_names):
       player = Player(name=name)
@@ -61,7 +61,7 @@ class Game:
       player_cards = self.deck.get_cards(6)
       player.draw_cards(player_cards)
 
-      player.set_trump_card(trump_card)
+      player.set_trump_card(self.deck.get_trump())
       player_min_trump = player.get_min_trump()
 
       if player_min_trump and player_min_trump < min_trump:
@@ -82,10 +82,12 @@ class Game:
       elif player_name == 'start':
         if len(players) < 2:
           print("Must be at least 2 players in the game")
+          continue
         else:
           return players
       else:
         players.append(player_name)
+        player_num += 1
 
   def draw_cards(self, players):
     for player in players:
@@ -160,7 +162,7 @@ class Game:
 
   def game_circle(self):
     players = list(self.players)
-    
+
     attacker_index = 0
     defender_index = 1
     defender = players[defender_index]

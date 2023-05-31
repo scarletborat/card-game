@@ -64,8 +64,3 @@ class Player:
         break
     return index
 
-  def can_tosse(self, suit_value, table_cards): #TODO remove
-    index = self.card_index(suit_value)
-    if index == -1:
-      return False
-    return bool([c for c in table_cards if c.get_value() == self.cards[index].get_value()])

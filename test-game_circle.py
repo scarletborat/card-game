@@ -9,6 +9,10 @@ from game import Game
 class BasicStub(Game):
   def invite_players(self):
       return ['John', 'Jane']
+
+  def start(self):
+    players_names = self.invite_players()
+    self.init_and_arrange_first_turn_order(players_names)
       
 class GameCircle(TestCase):
     def test_user_lost(self):
@@ -20,6 +24,7 @@ class GameCircle(TestCase):
           return 1
       
       game = Stub()
+      game.start()
       game.deck.deck = []
 
       player_cards = [
@@ -48,6 +53,7 @@ class GameCircle(TestCase):
           return 0
 
       game = Stub()
+      game.start()
       game.deck.deck = []
 
       player_cards = [
