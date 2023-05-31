@@ -16,7 +16,7 @@ class InvitePlayers(TestCase):
     @patch('builtins.input', side_effect=['John', 'start', 'q'])
     def test_two_user_min(self, mock_input):
         game = Game()
-        expected_output = "Must be at least 2 players in the game\n"
+        expected_output = "Must be at least 2 players in the game\n\n"
 
         captured_output = StringIO()
         sys.stdout = captured_output

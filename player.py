@@ -55,6 +55,8 @@ class Player:
       return -1
 
     suit, value = suit_value.split(':')
+    if not value.isdigit():
+      return -1
     value = int(value)
     index = -1
     
