@@ -141,7 +141,7 @@ class Game:
     table_cards = []
     passes = 0
 
-    print(f"Trump is {text_bold(self.deck.get_trump())}\n")
+    print(f"Trump are {text_bold(self.deck.get_trump())}\n")
     player_notification(attacker, 'attacker')
 
     card = self.init_turn('Enter the card\n', attacker)
@@ -174,7 +174,7 @@ class Game:
       if passes >= len(attackers) or not defender.cards_number():
         self.discard_pile += table_cards
         return 0
-  
+
   def game_circle(self):
     players = list(self.players)
     attacker_index = 0
@@ -188,10 +188,10 @@ class Game:
 
     while True:
       took = self.small_circle(attackers, attacker, defender)
-      
-      # if self.deck.get_len():
-      #   self.draw_cards(players)
-      
+
+      if self.deck.get_len():
+        self.draw_cards(players)
+
       i_players_with_cards = [i for i, player in enumerate(players) if player.cards_number()]
       length = len(i_players_with_cards)
 
